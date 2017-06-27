@@ -21,8 +21,8 @@
     "annotateForClosureCompiler": true,
     "strictMetadataEmit": true,
     "skipTemplateCodegen": true,
-    "flatModuleOutFile": "avelow-auth.js",
-    "flatModuleId": "avelow-auth"
+    "flatModuleOutFile": "avelow-jwt-auth.js",
+    "flatModuleId": "avelow-jwt-auth"
   },
   "files": [
     "./index.ts"
