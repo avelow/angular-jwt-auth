@@ -1,6 +1,6 @@
-# avelow-auth
+# avelow-jwt-auth
 
-**avelow-auth** est un module permettant la mise en place de *guards* pour angular2 pour gérer l'authentification et l'autorisation.
+**avelow-jwt-auth** est un module permettant la mise en place de *guards* pour angular2 pour gérer l'authentification et l'autorisation.
 
 >L'**authentification** consiste à déterminer si quelqu'un est vraiment qui il prétend être.
 >
@@ -10,7 +10,7 @@
 
 ## Comment fonctionne ce module ?
 
-**avelow-auth** est basé sur la librairie [angular2-jwt](https://github.com/auth0/angular2-jwt) pour gérer les [Json Web Tokens (JWT)](https://jwt.io/introduction/).
+**avelow-jwt-auth** est basé sur la librairie [angular2-jwt](https://github.com/auth0/angular2-jwt) pour gérer les [Json Web Tokens (JWT)](https://jwt.io/introduction/).
 Lors de l'authentification de l'utilisateur grâce au service fourni dans le module, le JWT retourné par l'API est stocké dans le *local storage* du navigateur.
 Le JWT token contient les différents rôles possédés par l'utilisateur.
 
@@ -19,14 +19,14 @@ Les *guards* accèdent au JWT pour savoir si un utilisateur est correctement aut
 ## Installation
 
 ```
-npm install avelow-auth
+npm install avelow-jwt-auth --save
 ```
 
 Le module fourni 1 service :
-- `AvelowAuthService` : permet d'authentifier un utilisateur et de récupérer le JWT.
+- `AvelowJwtAuthService` : permet d'authentifier un utilisateur et de récupérer le JWT.
 et 2 guards :
-- `AvelowAuthGuard` : bloque une route aux utilisateurs non authentifiés
-- `AvelowRolesGuard` : bloque une route aux utilisateurs ne possèdant pas les rôles nécessaires.
+- `AvelowJwtAuthGuard` : bloque une route aux utilisateurs non authentifiés
+- `AvelowJwtRolesGuard` : bloque une route aux utilisateurs ne possèdant pas les rôles nécessaires.
 
 ## Utilisation Basique
 ### Protection des routes
@@ -35,11 +35,11 @@ On charge le module dans le `app.module.ts` en spécifiant la configuration pour
 
 ```javascript
 ...
-import { AvelowAuthModule } from 'avelow-auth';
+import { AvelowJwtAuthModule, AvelowJwtAuthConfig } from 'avelow-jwt-auth';
 
 ...
 
-const AVELOW_AUTH_CONFIG = {
+const AVELOW_JWT_AUTH_DI_CONFIG: AvelowJwtAuthConfig = {
 	loginUrl: '/login',
 	apiUrl: 'http://example.com/login_check'
 	usernameParam: 'username',
@@ -49,7 +49,7 @@ const AVELOW_AUTH_CONFIG = {
 
 @NgModule({
   imports: [
-	  AvelowAuthModule.forRoot(AVELOW_AUTH_CONFIG)
+	  AvelowJwtAuthModule.forRoot(AVELOW_JWT_AUTH_DI_CONFIG)
   ]
 })
 export class AppModule {}
@@ -61,22 +61,22 @@ On utilise les guards au niveau du `app.routing.module.ts`.
 import { NgModule }             from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
  
-import { AvelowAuthGuard, AvelowRolesGuard } from 'avelow-auth';
+import { AvelowJwtAuthGuard, AvelowJwtRolesGuard } from 'avelow-jwt-auth';
 
 const heroesRoutes: Routes = [
   { path: 'publicRoute',  component: ...},
   { 
 	  path: 'authenticatedRoute', component: ...,
-	  canActivate: [AvelowAuthGuard]
+	  canActivate: [AvelowJwtAuthGuard]
   },
   {
 	  path: 'moderatorRoute', component: ...,
-	  canActivate: [AvelowRolesGuard],
+	  canActivate: [AvelowJwtRolesGuard],
 	  data: { roles:['ROLE_MODERATOR', 'ROLE_ADMIN'], accessDeniedUrl: '/login'}
   },
   {
 	  path: 'adminRoute', component: ...,
-	  canActivate: [AvelowRolesGuard],
+	  canActivate: [AvelowJwtRolesGuard],
 	  data: { roles:['ROLE_ADMIN'], accessDeniedUrl: '/restricted-area'}
   }
 ];
@@ -94,14 +94,14 @@ export class HeroRoutingModule { }
 
 ### Authentification
 
-Pour gérer l'authentification des utilisateurs, il faut passer par le `service: AvelowAuthService` et sa méthode `authenticate(username: string, password: string)`.
+Pour gérer l'authentification des utilisateurs, il faut passer par le `service: AvelowJwtAuthService` et sa méthode `authenticate(username: string, password: string)`.
 Il faut souscrire à cette méthode pour récupérer soit le token si tout c'est bien passé, soit l'erreur en cas d'échec au niveau de l'authentification.
 
 Le format de la réponse dépends de la configuration de votre API.
 
 ```javascript
 username = 'John';
-password = 'Doe';
+password = 'password';
 
 this.service.authenticate(username, password).subscribe(
     (token) => {
@@ -127,17 +127,17 @@ this.service.decodedToken(): any;
 L'objectif est de transmettre le token à l'API à chaque requête qui demande une authentification. Pour cela, il faut utilisater le service `AuthHttp` fourni par [angular2-jwt](https://github.com/auth0/angular2-jwt).
 Il vous suffit de suivre les instructions données par angular2-jwt au sujet de [sa configuration](https://github.com/auth0/angular2-jwt/blob/master/README.md#basic-configuration)
 
-**ATTENTION :** définissez bien le même nom de token dans la configuration de `AuthHttp` et dans la configuration du module `AvelowAuth`
+**ATTENTION :** définissez bien le même nom de token dans la configuration de `AuthHttp` et dans la configuration du module `AvelowJwtAuthModule`
 
-## Configuration de AvelowAuth
+## Configuration de AvelowJwtAuthModule
 - `loginUrl`: l'url de votre application angular permettant à l'utilisateur de se connecter.
 - `apiUrl`: l'url de votre API permettant d'authentifier l'utilisateur
 - `usernameParam`: le nom du paramètre contenant le nom d'utilisateur que votre API attends
 - `passwordParam`: le nom du paramètre contenant le mot de passe de l'utilisateur que votre API attends
 - `tokenName`: le nom du token stocké dans le *local storage*
 
-## Configuration des routes pour AvelowRolesGuard
+## Configuration des routes pour AvelowJwtRolesGuard
 
-Les routes protégées par `AvelowRolesGuard` attendent 2 paramètres supplémentaires pour fonctionner :
+Les routes protégées par `AvelowJwtRolesGuard` attendent 2 paramètres supplémentaires pour fonctionner :
 - `roles`: le tableau des rôles ayant accès à cette route
 - `accessDeniedUrl`: l'url vers laquelle l'utilisateur est redirigé s'il ne possède pas un des rôles.

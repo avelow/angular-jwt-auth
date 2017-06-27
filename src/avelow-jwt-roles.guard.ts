@@ -2,16 +2,16 @@ import { Injectable } from '@angular/core';
 import { Router, ActivatedRouteSnapshot } from '@angular/router';
 import { CanActivate } from '@angular/router';
 
-import { AvelowAuthService } from './avelow-auth-service.service';
-import { AvelowAuthGuard } from './avelow-auth.guard';
+import { AvelowJwtAuthService } from './avelow-jwt-auth.service';
+import { AvelowJwtAuthGuard } from './avelow-jwt-auth.guard';
 
 @Injectable()
-export class AvelowRolesGuard implements CanActivate {
+export class AvelowJwtRolesGuard implements CanActivate {
     decodedToken: any;
 
     constructor(
-        private authGuard: AvelowAuthGuard,
-        private authService: AvelowAuthService,
+        private authGuard: AvelowJwtAuthGuard,
+        private authService: AvelowJwtAuthService,
         private router: Router) {}
 
     canActivate(route: ActivatedRouteSnapshot) {

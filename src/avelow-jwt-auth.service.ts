@@ -1,7 +1,7 @@
 import { Injectable, Inject } from '@angular/core';
 import { Http, Response, Headers, RequestOptions, URLSearchParams } from '@angular/http';
 import { tokenNotExpired } from 'angular2-jwt';
-import {AVELOW_AUTH_CONFIG, AvelowAuthConfig} from './index';
+import {AVELOW_JWT_AUTH_CONFIG, AvelowJwtAuthConfig} from './index';
 
 import { JwtHelper } from 'angular2-jwt';
 
@@ -11,13 +11,13 @@ import 'rxjs/add/operator/catch';
 import 'rxjs/add/observable/throw';
 
 @Injectable()
-export class AvelowAuthService {
+export class AvelowJwtAuthService {
 
   jwtHelper: JwtHelper = new JwtHelper();
 
   constructor(
       private http: Http,
-      @Inject(AVELOW_AUTH_CONFIG) private config: AvelowAuthConfig) {}
+      @Inject(AVELOW_JWT_AUTH_CONFIG) private config: AvelowJwtAuthConfig) {}
 
   authenticate(username: string, password: string) {
     let body = new URLSearchParams();
