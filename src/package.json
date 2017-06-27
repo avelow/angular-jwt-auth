@@ -14,13 +14,13 @@
     "auth",
     "jwt"
   ],
-  "description": "Avelow Auth Module",
+  "description": "avelow-jwt-auth is a module that helps authentication with JWT",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/avelow/angular-jwt-auth/issues"
   },
-  "module": "avelow-auth.js",
-  "typings": "avelow-auth.d.ts",
+  "module": "avelow-jwt-auth.js",
+  "typings": "avelow-jwt-auth.d.ts",
   "peerDependencies": {
     "@angular/core": "^4.0.0",
     "rxjs": "^5.1.0",
